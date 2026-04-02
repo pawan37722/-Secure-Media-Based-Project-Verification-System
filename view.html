@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>View Content</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h2>View Your Content</h2>
+
+<div class="view-container">
+
+    <div>
+        <h3>Your Uploaded Media</h3>
+        <img src="" id="viewImage" class="hidden">
+        <video id="viewVideo" controls class="hidden"></video>
+    </div>
+
+    <div>
+        <h3>Paste URL</h3>
+        <input type="text" id="urlInput" placeholder="Enter your link here">
+        <button onclick="loadMedia()">Go to Link</button>
+    </div>
+
+</div>
+
+<script>
+function loadMedia() {
+    const url = document.getElementById("urlInput").value;
+
+    const img = document.getElementById("viewImage");
+    const vid = document.getElementById("viewVideo");
+
+    if (url.includes("image")) {
+        img.src = url;
+        img.classList.remove("hidden");
+        vid.classList.add("hidden");
+    } else {
+        vid.src = url;
+        vid.classList.remove("hidden");
+        img.classList.add("hidden");
+    }
+}
+</script>
+
+</body>
+</html>

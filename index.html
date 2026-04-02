@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Geo Media App</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h2>Upload Your Media</h2>
+
+<div class="container">
+    <div class="card">
+        <h3>Upload Photo</h3>
+        <button id="photoBtn">Open Camera</button>
+    </div>
+
+    <div class="card">
+        <h3>Upload Video</h3>
+        <button id="videoBtn">Record Video</button>
+    </div>
+</div>
+
+<!-- FULLSCREEN CAMERA -->
+<div id="cameraModal" class="hidden modal">
+    <video id="camera" autoplay playsinline></video>
+    <canvas id="canvas" class="hidden"></canvas>
+
+    <div class="controls">
+        <button id="captureBtn">Capture</button>
+        <button id="retakeBtn" class="hidden">Take Again</button>
+        <button id="uploadBtn" class="hidden">Upload</button>
+        <button id="closeBtn">Close</button>
+    </div>
+</div>
+
+<hr>
+<div class="view-section">
+    <div class="left">
+        <img id="viewImage" class="hidden">
+        <video id="viewVideo" controls class="hidden"></video>
+    </div>
+
+
+    <!-- METADATA DISPLAY -->
+<div id="metaData" class="meta hidden">
+    <h3>Media Details</h3>
+    <p id="dateText">a</p>
+    <p id="timeText">a</p>
+    <p id="locationText">a</p>
+    <a id="mapLink" target="_blank"></a>
+</div>
+
+
+
+    <div class="right">
+        <h3>Paste URL of uploded file </h3>
+        <input type="text" id="urlInput" placeholder="Enter your link here">
+        <button id="loadBtn">Go to Link</button>
+    </div>
+</div>
+
+<script src="config.js"></script>
+<script src="script.js"></script>
+
+</body>
+</html>
