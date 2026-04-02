@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Geo Media Verification</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h2>Upload Verified Media</h2>
+
+<div class="container">
+    <div class="card">
+        <h3>📷 Photo</h3>
+        <button id="photoBtn">Open Camera</button>
+    </div>
+    <div class="card">
+        <h3>🎥 Video</h3>
+        <button id="videoBtn">Record Video</button>
+    </div>
+</div>
+
+<!-- CAMERA MODAL -->
+<div id="cameraModal" class="hidden modal">
+    <video id="camera" autoplay playsinline muted></video>
+    <canvas id="canvas" class="hidden"></canvas>
+
+    <div class="controls">
+        <button id="captureBtn">Capture</button>
+        <button id="retakeBtn" class="hidden">Retake</button>
+        <button id="uploadBtn" class="hidden">Upload &amp; Get Link</button>
+        <button id="closeBtn">✕ Close</button>
+    </div>
+
+    <div id="uploadStatus" class="hidden status-box"></div>
+</div>
+
+<hr>
+
+<h2>View Verified Content</h2>
+
+<div class="view-section">
+    <div class="search-row">
+        <input type="text" id="urlInput" placeholder="Paste verification URL or ID here">
+        <button id="loadBtn">Load</button>
+    </div>
+
+    <div id="errorBox" class="hidden error-box"></div>
+
+    <img id="viewImage" class="hidden" alt="Captured media">
+    <video id="viewVideo" controls class="hidden"></video>
+
+    <div id="metaData" class="meta hidden">
+
+        <!-- 4 info cards -->
+        <div class="info-grid">
+            <div class="info-card">
+                <span class="info-icon">📅</span>
+                <span class="info-label">Date</span>
+                <span class="info-value" id="dateText">—</span>
+            </div>
+            <div class="info-card">
+                <span class="info-icon">⏰</span>
+                <span class="info-label">Time</span>
+                <span class="info-value" id="timeText">—</span>
+            </div>
+            <div class="info-card">
+                <span class="info-icon">🌐</span>
+                <span class="info-label">Latitude</span>
+                <span class="info-value" id="latText">—</span>
+            </div>
+            <div class="info-card">
+                <span class="info-icon">🌐</span>
+                <span class="info-label">Longitude</span>
+                <span class="info-value" id="lngText">—</span>
+            </div>
+        </div>
+
+        <!-- Location URL (from DB) -->
+        <div class="location-url-box">
+            <span class="location-url-label">📍 Location URL (saved in database)</span>
+            <div class="location-url-row">
+                <input type="text" id="locationUrlInput" readonly placeholder="No location data">
+                <button id="copyLocationBtn">📋 Copy</button>
+                <a id="mapLink" href="#" target="_blank" rel="noopener noreferrer">🗺 Open Map</a>
+            </div>
+        </div>
+
+        <!-- Embedded map -->
+        <div class="map-container">
+            <iframe
+                id="mapEmbed"
+                width="100%"
+                height="320"
+                style="border:0; border-radius:10px;"
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+                src="">
+            </iframe>
+        </div>
+
+    </div>
+</div>
+
+<script src="config.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
