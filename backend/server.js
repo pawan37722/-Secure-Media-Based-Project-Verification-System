@@ -3,13 +3,39 @@ import multer from "multer";
 import { v4 as uuid } from "uuid";
 import cors from "cors";
 import path from "path";
+import dotenv from "dotenv";
+import { fileURLToPath } from "url";
 import { pool } from "./db.js";
-import { CONFIG } from "./config.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load environment variables from root .env
+dotenv.config({ path: path.join(__dirname, '..', '.env') });
+
+const required = (name, defaultValue) => {
+    const value = process.env[name] ?? defaultValue;
+    if (value === undefined) throw new Error(`Missing environment variable: ${name}`);
+    return value;
+};
+
+const CONFIG = {
+    PORT: Number(required("PORT", 5000)),
+    BASE_URL: required("BASE_URL"),
+    FRONTEND_URL: required("FRONTEND_URL"),
+    DB: {
+        connectionString: required("DB_CONNECTION_STRING")
+    }
+};
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
+app.get("/config.js", (req, res) => {
+    res.type("application/javascript");
+    res.send(`const ENV = { API_BASE_URL: ${JSON.stringify(CONFIG.BASE_URL)} };`);
+});
 
 app.use(express.static(path.join(process.cwd(), "../frontend")));
 app.get("/", (req, res) => {
