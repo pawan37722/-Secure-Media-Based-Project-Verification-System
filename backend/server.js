@@ -3,6 +3,8 @@ import multer from "multer";
 import { v4 as uuid } from "uuid";
 import cors from "cors";
 import path from "path";
+import os from "os";
+import fs from "fs";
 import dotenv from "dotenv";
 import { fileURLToPath } from "url";
 import { pool } from "./db.js";
@@ -10,23 +12,31 @@ import { pool } from "./db.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Load environment variables from root .env
+// Load environment variables from root .env when running locally
 dotenv.config({ path: path.join(__dirname, '..', '.env') });
 
-const required = (name, defaultValue) => {
-    const value = process.env[name] ?? defaultValue;
-    if (value === undefined) throw new Error(`Missing environment variable: ${name}`);
-    return value;
-};
+const PORT = Number(process.env.PORT || 5000);
+const VERCEL_URL = process.env.VERCEL_URL
+    ? process.env.VERCEL_URL.startsWith("http")
+        ? process.env.VERCEL_URL
+        : `https://${process.env.VERCEL_URL}`
+    : undefined;
 
 const CONFIG = {
-    PORT: Number(required("PORT", 5000)),
-    BASE_URL: required("BASE_URL"),
-    FRONTEND_URL: required("FRONTEND_URL"),
+    PORT,
+    BASE_URL: process.env.BASE_URL || VERCEL_URL || `http://localhost:${PORT}`,
+    FRONTEND_URL: process.env.FRONTEND_URL || process.env.BASE_URL || VERCEL_URL || `http://localhost:${PORT}`,
     DB: {
-        connectionString: required("DB_CONNECTION_STRING")
+        connectionString: process.env.DB_CONNECTION_STRING
     }
 };
+
+if (!CONFIG.DB.connectionString) {
+    throw new Error("Missing environment variable: DB_CONNECTION_STRING");
+}
+
+const UPLOAD_DIR = process.env.UPLOAD_DIR || path.join(os.tmpdir(), "uploads");
+fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 
 const app = express();
 app.use(cors());
@@ -37,15 +47,10 @@ app.get("/config.js", (req, res) => {
     res.send(`const ENV = { API_BASE_URL: ${JSON.stringify(CONFIG.BASE_URL)} };`);
 });
 
-app.use(express.static(path.join(process.cwd(), "../frontend")));
-app.get("/", (req, res) => {
-    res.sendFile(path.join(process.cwd(), "../frontend/index.html"));
-});
 
-
-// ── Multer: keep file extension ───────────────────────────────
+// ── Multer: keep file extension and use a writable temp folder ─────────────────
 const storage = multer.diskStorage({
-    destination: "uploads/",
+    destination: UPLOAD_DIR,
     filename: (req, file, cb) => {
         const ext = path.extname(file.originalname)
             || (file.mimetype.startsWith("image") ? ".jpg" : ".webm");
@@ -99,7 +104,7 @@ app.post("/upload", upload.single("file"), async (req, res) => {
 });
 
 // ── Serve uploaded files ──────────────────────────────────────
-app.use("/media", express.static("uploads"));
+app.use("/media", express.static(UPLOAD_DIR));
 
 // ── GET /media-info/:id ───────────────────────────────────────
 app.get("/media-info/:id", async (req, res) => {
